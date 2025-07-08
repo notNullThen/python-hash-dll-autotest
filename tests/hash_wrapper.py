@@ -15,7 +15,7 @@ ERROR_MAP = {
 }
 
 
-class HashLib:
+class HashWrapper:
     def __init__(self):
         lib_path = os.path.abspath("./bin/linux/libhash.so")
         self.lib = ctypes.CDLL(lib_path)
