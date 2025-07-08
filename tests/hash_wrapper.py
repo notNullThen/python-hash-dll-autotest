@@ -35,17 +35,17 @@ class HashWrapper:
         self.lib.HashStop.restype = c_uint32
 
     def initialize(self):
-        print("Initializing the hash library...")
+        print("Initializing the hash library...\n")
         result = self.lib.HashInit()
         self._check_for_error(result)
 
     def terminate(self):
-        print("Terminating the hash library...")
+        print("Terminating the hash library...\n")
         result = self.lib.HashTerminate()
         self._check_for_error(result)
 
     def hash_directory(self, directory):
-        print(f"Hashing the contents of a '{directory}' directory...")
+        print(f"Hashing the contents of a '{directory}' directory...\n")
         operation_id = c_size_t()
         result = self.lib.HashDirectory(directory.encode("utf-8"), byref(operation_id))
         self._check_for_error(result)
@@ -53,7 +53,7 @@ class HashWrapper:
         return operation_id.value
 
     def read_next_log_line(self):
-        print("Reading the next log line from the hash operation...")
+        print("Reading the next log line from the hash operation...\n")
 
         line_ptr = c_char_p()
         result = self.lib.HashReadNextLogLine(byref(line_ptr))
@@ -62,7 +62,7 @@ class HashWrapper:
         return line_ptr
 
     def get_status(self, operation_id) -> bool:
-        print("Checking the status of a hashing operation...")
+        print("Checking the status of a hashing operation...\n")
 
         running = c_bool(True)
         result = self.lib.HashStatus(c_size_t(operation_id), byref(running))
@@ -71,12 +71,12 @@ class HashWrapper:
         return running.value
 
     def stop(self, operation_id):
-        print(f"Stopping the '{operation_id}' operation...")
+        print(f"Stopping the '{operation_id}' operation...\n")
         result = self.lib.HashStop(c_size_t(operation_id))
         self._check_for_error(result)
 
     def free(self, pointer):
-        print("Releasing memory allocated by functions...")
+        print("Releasing memory allocated by functions...\n")
 
         self.lib.HashFree(pointer)
 

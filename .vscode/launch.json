@@ -8,7 +8,7 @@
       "name": "Python Debugger: Run",
       "type": "debugpy",
       "request": "launch",
-      "program": "./tests/test_framework_use.py",
+      "program": "./tests/tests.py",
       "console": "integratedTerminal"
     }
   ]
