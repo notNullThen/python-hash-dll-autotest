@@ -62,8 +62,6 @@ class HashWrapper:
         return line_ptr
 
     def get_status(self, operation_id) -> bool:
-        print("Checking the status of a hashing operation...\n")
-
         running = c_bool(True)
         result = self.lib.HashStatus(c_size_t(operation_id), byref(running))
         self._check_for_error(result)
@@ -76,7 +74,7 @@ class HashWrapper:
         self._check_for_error(result)
 
     def free(self, pointer):
-        print("Releasing memory allocated by functions...\n")
+        print(f"Cleaning up pointer memory...\n")
 
         self.lib.HashFree(pointer)
 
