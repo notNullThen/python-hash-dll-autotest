@@ -1,49 +1,49 @@
 import time
-import pytest
-from hash_wrapper import HashWrapper
+from support.hash import Hash
 
-hash_wrapper = HashWrapper()
-
-
-def get_directory_hash(path: str):
-    operation_id = hash_wrapper.hash_directory(path)
-
-    while hash_wrapper.get_status(operation_id):
-        time.sleep(0.1)
-    line_ptr = hash_wrapper.read_next_log_line()
-
-    return line_ptr
+directoryPath = "./testData"
+hash = Hash()
 
 
 def test_memory_clean_up():
-    hash_wrapper.initialize()
+    operation_id = None
 
-    operation_id = hash_wrapper.hash_directory("./testData")
+    try:
+        hash.initialize()
 
-    while hash_wrapper.get_status(operation_id):
-        time.sleep(0.1)
+        operation_id = hash.hash_directory(directoryPath)
 
-    line_ptr = hash_wrapper.read_next_log_line()
-    result_value = line_ptr.value
+        while hash.get_status(operation_id):
+            time.sleep(0.1)
 
-    print(result_value.decode("utf-8"))
+        line_ptr = hash.read_next_log_line()
+        result_value = line_ptr.value
 
-    hash_wrapper.free(line_ptr)
+        print(result_value.decode("utf-8"))
 
-    assert (
-        line_ptr.value is None
-    ), f'Memory was not freed up correctly! line_ptr.value is: "{line_ptr.value}"'
+        hash.free(line_ptr)
 
-    hash_wrapper.terminate()
+        assert (
+            line_ptr.value is None
+        ), f'Memory was not freed up correctly! line_ptr.value is: "{line_ptr.value}"'
+    finally:
+        hash.stop(operation_id)
+        hash.terminate()
 
 
 def test_multiple_hashes():
-    directoryPath = "./testData"
+    try:
+        hash.initialize()
 
-    hash_wrapper.initialize()
+        operation_id = hash.hash_directory(directoryPath)
 
-    result = get_directory_hash(directoryPath).value
+        while hash.get_status(operation_id):
+            time.sleep(0.1)
 
-    print(result.decode("utf-8"))
+        line_ptr = hash.read_next_log_line()
+        result_value = line_ptr.value
 
-    hash_wrapper.terminate()
+        print(result_value.decode("utf-8"))
+    finally:
+        hash.stop(operation_id)
+        hash.terminate()
