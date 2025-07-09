@@ -66,4 +66,5 @@ pytest -v tests/test_functions.py -s
 - ❓️ Memory is being managed incorrectly
   - To reproduce - unskip the `test_hash_one_file_dir()` test and run in bash `pytest -v tests/`
   - Then you can see in report that the actual result contains `multipleFilesFolder` and `file3.txt` though in Python script we use `file1.txt` from `oneFilesFolder`
+  - The test will pass if you run only the `test_hash_one_file_dir` test with bash command `pytest -v tests/ -k test_hash_one_file_dir`
   - That means that memory is handled wrongly.

@@ -53,4 +53,4 @@ class HashManager:
     def _check_for_error(self, code):
         if code == 0:
             return
-        raise Exception(self.wrapper.get_error_from_code(code))
+        raise Exception(f"HASH ERROR: {self.wrapper.get_error_from_code(code)}")
