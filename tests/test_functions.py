@@ -5,108 +5,62 @@ import time
 sys.path.insert(0, "./support")
 sys.path.insert(0, "./testData")
 
-from hash_manager import HashWrapper, HashManager
 from ctypes import *
-from utils import Utils
 from dirs_path import DIRS_PATH
 
-wrapper = HashWrapper()
-manager = HashManager(wrapper)
+
+@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
+def test_HashDirectory(hash_manager):
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    assert operation_id_value > 0, "Operation ID should be greater than 0"
 
 
-def test_HashInit():
+def test_HashReadNextLogLine(utils):
+    result = utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
 
-    manager.initialize()
+    assert result is not None, "Log line should not be None"
 
 
-def test_HashTerminate():
+def test_HashStatus(hash_manager):
 
-    manager.initialize()
-    manager.terminate()
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    assert operation_id_value > 0, "Operation ID should be greater than 0"
+
+    status = hash_manager.get_running_status(operation_id_value)
+    assert status is True, "Status should be True while operation is running"
+
+    while hash_manager.get_running_status(operation_id_value):
+        time.sleep(0.1)
+
+    assert (
+        hash_manager.get_running_status(operation_id_value) is False
+    ), "Status should be False after operation is finished"
 
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
-def test_HashDirectory():
+def test_HashStop(hash_manager):
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    assert operation_id_value > 0, "Operation ID should be greater than 0"
 
-    try:
-        manager.initialize()
+    status = hash_manager.get_running_status(operation_id_value)
+    assert status is True, "Status should be False after stopping the operation"
 
-        operation_id_value = manager.hash_directory(DIRS_PATH.multipleFilesDir)
-        assert operation_id_value > 0, "Operation ID should be greater than 0"
-    finally:
-        manager.terminate()
+    hash_manager.stop(operation_id_value)
 
-
-def test_HashReadNextLogLine():
-    utils = Utils(wrapper)
-
-    try:
-        manager.initialize()
-
-        result = utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
-
-        assert result is not None, "Log line should not be None"
-    finally:
-        manager.terminate()
-
-
-def test_HashStatus():
-
-    try:
-        manager.initialize()
-
-        operation_id_value = manager.hash_directory(DIRS_PATH.multipleFilesDir)
-        assert operation_id_value > 0, "Operation ID should be greater than 0"
-
-        status = manager.get_running_status(operation_id_value)
-        assert status is True, "Status should be True while operation is running"
-
-        while manager.get_running_status(operation_id_value):
-            time.sleep(0.1)
-
-        assert (
-            manager.get_running_status(operation_id_value) is False
-        ), "Status should be False after operation is finished"
-    finally:
-        manager.terminate()
-
-
-@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
-def test_HashStop():
-
-    try:
-        manager.initialize()
-
-        operation_id_value = manager.hash_directory(DIRS_PATH.multipleFilesDir)
-        assert operation_id_value > 0, "Operation ID should be greater than 0"
-
-        status = manager.get_running_status(operation_id_value)
-        assert status is True, "Status should be False after stopping the operation"
-
-        manager.stop(operation_id_value)
-
-        status = manager.get_running_status(operation_id_value)
-        assert status is False, "Status should be False after stopping the operation"
-    finally:
-        manager.terminate()
+    status = hash_manager.get_running_status(operation_id_value)
+    assert status is False, "Status should be False after stopping the operation"
 
 
 @pytest.mark.skip(reason="BUG: HashFree() does not clean memory up correctly")
-def test_HashFree():
+def test_HashFree(hash_manager):
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
 
-    try:
-        manager.initialize()
+    while hash_manager.get_running_status(operation_id_value):
+        time.sleep(0.1)
 
-        operation_id_value = manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    result = hash_manager.read_next_log_line()
+    assert result is not None, "Log line pointer should not be None"
 
-        while manager.get_running_status(operation_id_value):
-            time.sleep(0.1)
+    hash_manager.free(result)
 
-        result = manager.read_next_log_line()
-        assert result is not None, "Log line pointer should not be None"
-
-        manager.free(result)
-
-        assert result is None, f'Memory was not freed up correctly! line_ptr.value is: "{result}"'
-    finally:
-        manager.terminate()
+    assert result is None, f'Memory was not freed up correctly! line_ptr.value is: "{result}"'

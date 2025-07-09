@@ -1,5 +1,3 @@
-import ctypes
-import os
 from ctypes import *
 from hash_wrapper import HashWrapper
 
