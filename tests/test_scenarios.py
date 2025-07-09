@@ -12,10 +12,12 @@ from hash_manager import HashWrapper, HashManager
 from utils import Utils
 from ctypes import *
 
+wrapper = HashWrapper()
+manager = HashManager(wrapper)
+utils = Utils(wrapper)
+
 
 def test_init_then_terminate():
-    wrapper = HashWrapper()
-
     wrapper.HashInit()
 
     terminate_result = wrapper.HashTerminate()
@@ -26,8 +28,6 @@ def test_init_then_terminate():
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_hash_dir_then_stop():
-    wrapper = HashWrapper()
-
     try:
         wrapper.HashInit()
 
@@ -37,13 +37,11 @@ def test_hash_dir_then_stop():
         stop_result = wrapper.HashStop(operation_id)
         assert stop_result == 0, f"HashStop failed with error code: {wrapper.get_error_from_code(stop_result)}"
     finally:
-        HashManager(wrapper).terminate()
+        manager.terminate()
 
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_hash_dir_then_terminate():
-    wrapper = HashWrapper()
-
     try:
         wrapper.HashInit()
 
@@ -55,12 +53,11 @@ def test_hash_dir_then_terminate():
             terminate_result == 0
         ), f"HashTerminate failed with error code: {wrapper.get_error_from_code(terminate_result)}"
     finally:
-        HashManager(wrapper).terminate()
+        manager.terminate()
 
 
 @pytest.mark.skip(reason="TODO: Define how to ignore the 'std::filesystem::__cxx11::filesystem_error' error")
 def test_hash_dir_with_invalid_path():
-    wrapper = HashWrapper()
     wrapper.HashInit()
 
     operation_id = c_size_t()
@@ -72,34 +69,25 @@ def test_hash_dir_with_invalid_path():
         assert result != 0, f"HashDirectory should fail with error code, got {result}"
         assert operation_id.value == 0
 
-    HashManager(wrapper).terminate()
 
-
-@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly | BUG: Memory is being managed incorrectly")
 def test_hash_one_file_dir():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
-    utils = Utils(wrapper)
-
     try:
         manager.initialize()
 
-        result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
+        actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
 
-        correct_result = utils.build_result(1, FILES_HASH.file1_path, FILES_HASH.file1_hash)
+        expected_result = Utils.build_result(1, FILES_HASH.file1_path, FILES_HASH.file1_hash)
 
         assert (
-            correct_result.lower() in result.lower()
-        ), f"Result is incorrect\nExpected result above; Actual result below:\n{correct_result}\n{result}"
+            expected_result.lower() in actual_result.lower()
+        ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
     finally:
         manager.terminate()
 
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_hash_empty_dir():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
-
     try:
         manager.initialize()
 
@@ -113,12 +101,8 @@ def test_hash_empty_dir():
         manager.terminate()
 
 
-# TODO: Finish the test
-@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
+@pytest.mark.skip(reason="BUG: Mixes resutls into one line if hash 2 folders paralelly")
 def test_two_parallel_hashes():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
-
     try:
         manager.initialize()
 
@@ -134,22 +118,24 @@ def test_two_parallel_hashes():
         while manager.get_running_status(operation_id1) and manager.get_running_status(operation_id2):
             time.sleep(0.1)
 
-        line_ptr1 = manager.read_next_log_line()
-        line_ptr2 = manager.read_next_log_line()
+        actual_result = manager.read_next_log_line()
 
-        print(f"First log line: {line_ptr1.value.decode('utf-8')}")
-        print(f"Second log line: {line_ptr2.value.decode('utf-8')}")
+        expected_result_1 = Utils.build_result(1, FILES_HASH.file1_path, FILES_HASH.file1_hash)
+        expected_result_2 = Utils.build_result(2, FILES_HASH.file2_path, FILES_HASH.file2_hash)
+        expected_result = f"{expected_result_1}\n{expected_result_2}"
 
-        assert line_ptr1.value is not None, "First log line should not be None"
-        assert line_ptr2.value is not None, "Second log line should not be None"
+        assert (
+            expected_result_1.lower() in actual_result.decode("utf-8").lower()
+        ), f"First result is incorrect\nExpected result:\n{expected_result}\nActual result:\n{actual_result.decode('utf-8')}"
+
     finally:
-        manager.terminate()
+        pass
+        # TODO: Uncomment after the "HashStop() and HashTerminate() freeze if operation is not finished" bug is fixed
+        # manager.terminate()
 
 
+# TODO: Finish the test
 def test_multiple_files_dir_hash():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
-
     try:
         manager.initialize()
 
@@ -161,8 +147,7 @@ def test_multiple_files_dir_hash():
         while manager.get_running_status(operation_id):
             time.sleep(0.1)
 
-        line_ptr = manager.read_next_log_line()
-        print(f"Log line: {line_ptr.value.decode('utf-8')}")
-        assert line_ptr.value is not None, "Log line should not be None"
+        result = manager.read_next_log_line()
+        print(f"Log line: {result.decode('utf-8')}")
     finally:
         manager.terminate()

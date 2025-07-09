@@ -33,7 +33,7 @@ class HashManager:
         result = self.wrapper.HashReadNextLogLine(byref(line_ptr))
         self._check_for_error(result)
 
-        return line_ptr
+        return line_ptr.value
 
     def get_running_status(self, operation_id_value) -> bool:
         running = c_bool(True)

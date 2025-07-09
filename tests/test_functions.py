@@ -10,17 +10,16 @@ from ctypes import *
 from utils import Utils
 from dirs_path import DIRS_PATH
 
+wrapper = HashWrapper()
+manager = HashManager(wrapper)
+
 
 def test_HashInit():
-    wrapper = HashWrapper()
-    hash_manager = HashManager(wrapper)
 
-    hash_manager.initialize()
+    manager.initialize()
 
 
 def test_HashTerminate():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
 
     manager.initialize()
     manager.terminate()
@@ -28,8 +27,6 @@ def test_HashTerminate():
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_HashDirectory():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
 
     try:
         manager.initialize()
@@ -41,8 +38,6 @@ def test_HashDirectory():
 
 
 def test_HashReadNextLogLine():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
     utils = Utils(wrapper)
 
     try:
@@ -56,8 +51,6 @@ def test_HashReadNextLogLine():
 
 
 def test_HashStatus():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
 
     try:
         manager.initialize()
@@ -80,8 +73,6 @@ def test_HashStatus():
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_HashStop():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
 
     try:
         manager.initialize()
@@ -102,8 +93,6 @@ def test_HashStop():
 
 @pytest.mark.skip(reason="BUG: HashFree() does not clean memory up correctly")
 def test_HashFree():
-    wrapper = HashWrapper()
-    manager = HashManager(wrapper)
 
     try:
         manager.initialize()
@@ -113,11 +102,11 @@ def test_HashFree():
         while manager.get_running_status(operation_id_value):
             time.sleep(0.1)
 
-        line_ptr = manager.read_next_log_line()
-        assert line_ptr is not None, "Log line pointer should not be None"
+        result = manager.read_next_log_line()
+        assert result is not None, "Log line pointer should not be None"
 
-        manager.free(line_ptr)
+        manager.free(result)
 
-        assert line_ptr.value is None, f'Memory was not freed up correctly! line_ptr.value is: "{line_ptr.value}"'
+        assert result is None, f'Memory was not freed up correctly! line_ptr.value is: "{result}"'
     finally:
         manager.terminate()

@@ -16,8 +16,8 @@ class Utils:
         while self.manager.get_running_status(operation_id_value):
             time.sleep(0.1)
 
-        line_ptr = self.manager.read_next_log_line()
-        return line_ptr.value.decode("utf-8")
+        result = self.manager.read_next_log_line()
+        return result.decode("utf-8")
 
     @staticmethod
     def build_result(operation_id: int, file_path: str, file_hash: str):

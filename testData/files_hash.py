@@ -10,7 +10,11 @@ class FilesHash:
 
     file2_name = "file2.txt"
     file2_path = f"{DIRS_PATH.multipleFilesDir}/file2.txt"
-    file2txt = "cbd024d843efc08cc4be00c40182f96e"
+    file2_hash = "CBD024D843EFC08CC4BE00C40182F96E"
+
+    file3_name = "file3.txt"
+    file3_path = f"{DIRS_PATH.multipleFilesDir}/file3.txt"
+    file3_hash = "F93808AA6E9C27A4FF6CAF62F8BD74D2"
 
 
 FILES_HASH = FilesHash()
