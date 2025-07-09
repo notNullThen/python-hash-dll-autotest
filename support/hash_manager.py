@@ -4,7 +4,7 @@ from ctypes import *
 from hash_wrapper import HashWrapper
 
 
-class Hash:
+class HashManager:
     def __init__(self, hash_wrapper: HashWrapper):
         self.wrapper = hash_wrapper
 

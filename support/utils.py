@@ -1,4 +1,4 @@
-from hash import Hash
+from hash_manager import HashManager
 from hash_wrapper import HashWrapper
 import time
 
@@ -6,17 +6,17 @@ import time
 class Utils:
     def __init__(self, wrapper: HashWrapper):
         self.wrapper = wrapper
-        self.hash = Hash(wrapper)
+        self.manager = HashManager(wrapper)
 
     def get_directory_hash(self, directoryPath: str):
-        operation_id_value = self.hash.hash_directory(directoryPath)
+        operation_id_value = self.manager.hash_directory(directoryPath)
 
         assert operation_id_value > 0, "Operation ID should be greater than 0"
 
-        while self.hash.get_running_status(operation_id_value):
+        while self.manager.get_running_status(operation_id_value):
             time.sleep(0.1)
 
-        line_ptr = self.hash.read_next_log_line()
+        line_ptr = self.manager.read_next_log_line()
         return line_ptr.value.decode("utf-8")
 
     @staticmethod
