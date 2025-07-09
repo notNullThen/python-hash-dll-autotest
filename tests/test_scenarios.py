@@ -91,6 +91,7 @@ def test_hash_empty_dir():
         hash.terminate()
 
 
+# TODO: Finish the test
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_two_parallel_hashes():
     wrapper = HashWrapper()
