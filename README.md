@@ -59,5 +59,7 @@ pytest -v tests/test_functions.py -s
 
 # Found bugs
 
-- HashStop() and HashTerminate() freeze if operation is not finished
-- MD5 Hash is calculated incorrectly
+- ✅ HashStop() and HashTerminate() freeze if operation is not finished
+- ✅ MD5 Hash is calculated incorrectly
+- ⚙️ Returns only last file hash from multiple files folder
+- ⚙️ Mixes resutls into one line if hash 2 folders paralelly
