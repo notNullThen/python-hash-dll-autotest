@@ -59,4 +59,5 @@ pytest -v tests/test_functions.py -s
 
 # Found bugs
 
-- BUG: HashStop() and HashTerminate() freeze if operation is not finished
+- HashStop() and HashTerminate() freeze if operation is not finished
+- MD5 Hash is calculated incorrectly

@@ -8,7 +8,7 @@ sys.path.insert(0, "./testData")
 from hash import HashWrapper, Hash
 from ctypes import *
 from utils import Utils
-from dirsPath import DIRS_PATH
+from dirs_path import DIRS_PATH
 
 
 def test_HashInit():

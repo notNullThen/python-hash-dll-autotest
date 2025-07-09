@@ -6,8 +6,10 @@ import time
 sys.path.insert(0, "./support")
 sys.path.insert(0, "./testData")
 
-from dirsPath import DIRS_PATH
+from dirs_path import DIRS_PATH
+from files_hash import FILES_HASH
 from hash import HashWrapper, Hash
+from utils import Utils
 from ctypes import *
 
 
@@ -46,7 +48,7 @@ def test_hash_dir_then_terminate():
         wrapper.HashInit()
 
         operation_id = c_size_t()
-        wrapper.HashDirectory(dir["multipleFilesDir"].encode("utf-8"), operation_id)
+        wrapper.HashDirectory(DIRS_PATH.multipleFilesDir.encode("utf-8"), operation_id)
 
         terminate_result = wrapper.HashTerminate()
         assert (
@@ -71,6 +73,26 @@ def test_hash_dir_with_invalid_path():
         assert operation_id.value == 0
 
     Hash(wrapper).terminate()
+
+
+@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+def test_hash_one_file_dir():
+    wrapper = HashWrapper()
+    hash = Hash(wrapper)
+    utils = Utils(wrapper)
+
+    try:
+        hash.initialize()
+
+        result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
+
+        correct_result = utils.build_result(1, FILES_HASH.file1_path, FILES_HASH.file1_hash)
+
+        assert (
+            correct_result.lower() in result.lower()
+        ), f"Result is incorrect\nExpected result above; Actual result below:\n{correct_result}\n{result}"
+    finally:
+        hash.terminate()
 
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
@@ -120,5 +142,27 @@ def test_two_parallel_hashes():
 
         assert line_ptr1.value is not None, "First log line should not be None"
         assert line_ptr2.value is not None, "Second log line should not be None"
+    finally:
+        hash.terminate()
+
+
+def test_multiple_files_dir_hash():
+    wrapper = HashWrapper()
+    hash = Hash(wrapper)
+
+    try:
+        hash.initialize()
+
+        operation_id = hash.hash_directory(DIRS_PATH.multipleFilesDir)
+
+        assert operation_id > 0, "Operation ID should be greater than 0"
+        assert hash.get_running_status(operation_id), "Hash operation should be running"
+
+        while hash.get_running_status(operation_id):
+            time.sleep(0.1)
+
+        line_ptr = hash.read_next_log_line()
+        print(f"Log line: {line_ptr.value.decode('utf-8')}")
+        assert line_ptr.value is not None, "Log line should not be None"
     finally:
         hash.terminate()
