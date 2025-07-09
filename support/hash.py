@@ -21,9 +21,7 @@ class Hash:
     def hash_directory(self, directory):
         print(f"Hashing the contents of a '{directory}' directory...\n")
         operation_id = c_size_t()
-        result = self.wrapper.HashDirectory(
-            directory.encode("utf-8"), byref(operation_id)
-        )
+        result = self.wrapper.HashDirectory(directory.encode("utf-8"), byref(operation_id))
         self._check_for_error(result)
 
         return operation_id.value
@@ -37,9 +35,9 @@ class Hash:
 
         return line_ptr
 
-    def get_status(self, operation_id) -> bool:
+    def get_running_status(self, operation_id_value) -> bool:
         running = c_bool(True)
-        result = self.wrapper.HashStatus(c_size_t(operation_id), byref(running))
+        result = self.wrapper.HashStatus(c_size_t(operation_id_value), byref(running))
         self._check_for_error(result)
 
         return running.value
