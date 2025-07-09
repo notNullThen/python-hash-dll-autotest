@@ -26,7 +26,7 @@ def test_hash_dir_then_terminate(hash_wrapper):
     operation_id = c_size_t()
     hash_wrapper.HashDirectory(DIRS_PATH.multipleFilesDir.encode("utf-8"), byref(operation_id))
 
-    time.sleep(1)
+    time.sleep(0.5)
     terminate_result = hash_wrapper.HashTerminate()
     assert (
         terminate_result == 0
