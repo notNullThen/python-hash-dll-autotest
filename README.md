@@ -22,10 +22,30 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### 4. Run tests
+#### 4. Run tests:
+
+#### Paralelly:
 
 ```bash
-pytest -v -n auto
+pytest -v -n auto tests/
+```
+
+#### Not-paralelly
+
+```bash
+pytest -v tests/
+```
+
+#### Specific file
+
+```bash
+pytest -v tests/test_functions.py
+```
+
+#### Specific file with console messages (Debug)
+
+```bash
+pytest -v tests/test_functions.py -s
 ```
 
 ### Lower level tests (without wrapper usage)
