@@ -4,12 +4,13 @@ from ctypes import *
 
 
 class HashWrapper:
-    def __init__(self):
+    def __init__(self, setup_types=True):
         lib_path = os.path.abspath("./bin/linux/libhash.so")
         self.lib = ctypes.CDLL(lib_path)
-        self._setup_prototypes()
+        if setup_types:
+            self._setup_types()
 
-    def _setup_prototypes(self):
+    def _setup_types(self):
         self.lib.HashInit.restype = c_uint32
         self.lib.HashTerminate.restype = c_uint32
         self.lib.HashDirectory.argtypes = [c_char_p, POINTER(c_size_t)]
@@ -49,7 +50,7 @@ class HashWrapper:
     def HashReadNextLogLine(self, line_ptr):
         return self.lib.HashReadNextLogLine(line_ptr)
 
-    def HashFree(self, pointer):
+    def HashFree(self, pointer: c_char_p):
         return self.lib.HashFree(pointer)
 
     def HashStop(self, operation_id):
