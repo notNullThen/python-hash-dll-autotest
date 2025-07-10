@@ -63,6 +63,7 @@ pytest -v tests/test_functions.py -s
 - ✅ MD5 Hash is calculated incorrectly
 - ⚙️ Returns only last file hash from multiple files folder
 - ⚙️ Mixes resutls into one line if hash 2 folders paralelly
+- ⚙️ HashFree does not return valid error code
 - ❓️ Memory is being managed incorrectly
   - To reproduce - unskip the `test_hash_one_file_dir()` test and run in bash `pytest -v tests/`
   - Then you can see in report that the actual result contains `multipleFilesFolder` and `file3.txt` though in Python script we use `file1.txt` from `oneFilesFolder`
