@@ -45,18 +45,19 @@ def test_hash_dir_with_invalid_path(hash_wrapper):
 
 @pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
 def test_hash_one_file_dir(utils):
-    actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
+    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.oneFileDir)
     expected_result = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
     assert (
         expected_result.lower() in actual_result.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
 def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
-    utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
+    hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
     hash_manager.read_next_log_line_and_free()
-    actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
+    hash_manager.read_next_log_line_and_free()
+    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.oneFileDir)
     expected_result = Utils.build_result(2, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
 
     assert (
@@ -64,7 +65,7 @@ def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="Can run it only one because of memory bugs")
+@pytest.mark.skip(reason="Can run only separately because of memory bugs")
 def test_hash_empty_dir(hash_manager, hash_wrapper):
     operation_id = c_size_t()
     hash_wrapper.HashDirectory(DIRS_PATH.emptyDir.encode("utf-8"), byref(operation_id))
@@ -93,8 +94,8 @@ def test_two_parallel_hashes(hash_manager):
     while hash_manager.get_running_status(operation_id1) and hash_manager.get_running_status(operation_id2):
         time.sleep(0.1)
 
-    actual_result_1 = hash_manager.read_next_log_line_and_free()
-    actual_result_2 = hash_manager.read_next_log_line_and_free()
+    actual_result_1 = hash_manager.read_next_log_line_and_free().decode("utf-8")
+    actual_result_2 = hash_manager.read_next_log_line_and_free().decode("utf-8")
     expected_result_1 = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
     expected_result_2 = Utils.build_result(2, FILES_DETAILS.file2_path, FILES_DETAILS.file2_hash)
 

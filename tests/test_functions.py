@@ -16,7 +16,7 @@ def test_HashDirectory(hash_manager):
 
 
 def test_HashReadNextLogLine(utils):
-    result = utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
+    result = utils.get_one_file_directory_hash(DIRS_PATH.multipleFilesDir)
 
     assert result is not None, "Log line should not be None"
 

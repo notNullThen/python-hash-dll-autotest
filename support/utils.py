@@ -8,7 +8,7 @@ class Utils:
         self.wrapper = wrapper
         self.manager = HashManager(wrapper)
 
-    def get_directory_hash(self, directoryPath: str):
+    def get_one_file_directory_hash(self, directoryPath: str):
         operation_id_value = self.manager.hash_directory(directoryPath)
 
         assert operation_id_value > 0, "Operation ID should be greater than 0"
