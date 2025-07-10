@@ -69,10 +69,5 @@ pytest -v tests/test_functions.py -s
 ### Functional bugs
 
 - ✅ MD5 Hash is calculated incorrectly
-- ⚙️ Returns only last file hash from multiple files folder
-- ⚙️ Mixes resutls into one line if hash 2 folders paralelly
+- ✅ Mixes results into one line if hashing 2 folders in parallel
 - ✅ HashStop() and HashTerminate() freeze if operation is not finished
-- ✅ Memory is being managed incorrectly
-  - To reproduce - unskip `test_hash_two_different_dirs` test and run it by bash command `pytest -v tests -k test_hash_two_different_dirs`
-  - In error report you will see that expected directory was `oneFileDir`, but actual directory is `multipleFilesDir`
-  - If you comment the first directory hash line - `utils.get_directory_hash(DIRS_PATH.multipleFilesDir)`, you will see that error report now has the oneFileDir in both actual and expected results, which is correct behavior. It means that first dir hash was used in second dir hash line

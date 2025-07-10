@@ -52,9 +52,10 @@ def test_hash_one_file_dir(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: Memory is being managed incorrectly")
-def test_hash_two_different_dirs(utils):
+# @pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
     utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
+    hash_manager.read_next_log_line_and_free()
     actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
     expected_result = Utils.build_result(2, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
 
@@ -109,5 +110,7 @@ def test_multiple_files_dir_hash(hash_manager):
     while hash_manager.get_running_status(operation_id):
         time.sleep(0.1)
 
-    result = hash_manager.read_next_log_line_and_free()
-    print(f"Log line: {result.decode('utf-8')}")
+    result_line_1 = hash_manager.read_next_log_line_and_free()
+    print(f"Log line: {result_line_1.decode('utf-8')}")
+    result_line_2 = hash_manager.read_next_log_line_and_free()
+    print(f"Log line: {result_line_2.decode('utf-8')}")
