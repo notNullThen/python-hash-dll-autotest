@@ -9,7 +9,7 @@ from ctypes import *
 from dirs_path import DIRS_PATH
 
 
-@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
+@pytest.mark.skip(reason="BUG: HashStop / HashTerminate - Freeze if the operation is not yet complete")
 def test_HashDirectory(hash_manager):
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
     assert operation_id_value > 0, "Operation ID should be greater than 0"
@@ -37,7 +37,7 @@ def test_HashStatus(hash_manager):
     ), "Status should be False after operation is finished"
 
 
-@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
+@pytest.mark.skip(reason="BUG: HashStop / HashTerminate - Freeze if the operation is not yet complete")
 def test_HashStop(hash_manager):
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
     assert operation_id_value > 0, "Operation ID should be greater than 0"

@@ -13,7 +13,7 @@ def test_init_then_terminate(hash_wrapper):
     ), f"HashTerminate failed with error code: {hash_wrapper.get_error_from_code(terminate_result)}"
 
 
-@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
+@pytest.mark.skip(reason="BUG: HashStop / HashTerminate - Freeze if the operation is not yet complete")
 def test_hash_dir_then_stop(hash_manager):
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
 
@@ -43,7 +43,7 @@ def test_hash_dir_with_invalid_path(hash_wrapper):
     assert operation_id.value == 0
 
 
-@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+@pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
 def test_hash_one_file_dir(utils):
     actual_result = utils.get_one_file_directory_hash(DIRS_PATH.oneFileDir)
     expected_result = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
@@ -52,7 +52,7 @@ def test_hash_one_file_dir(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+@pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
 def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
 
@@ -85,7 +85,7 @@ def test_hash_empty_dir(hash_manager, hash_wrapper):
 
 
 @pytest.mark.skip(
-    reason="BUG: Mixes results into one line if hashing 2 folders in parallel | BUG: Memory can be mixed up when running several separate processes"
+    reason="BUG: Log lines are mixed when hashing two folders in parallel | BUG: Memory can be mixed up when running several separate processes"
 )
 def test_two_parallel_hashes(hash_manager):
     operation_id1 = hash_manager.hash_directory(DIRS_PATH.oneFileDir)
@@ -113,7 +113,7 @@ def test_two_parallel_hashes(hash_manager):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_2}\n{actual_result_2}"
 
 
-@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+@pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
 def test_multiple_files_dir_hash(hash_manager):
     operation_id = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
     assert operation_id > 0
