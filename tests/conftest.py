@@ -8,6 +8,8 @@ sys.path.insert(0, "./testData")
 from hash_manager import HashWrapper, HashManager
 from utils import Utils
 
+sleep_time = 0.5
+
 
 @pytest.fixture
 def hash_wrapper():
@@ -26,6 +28,8 @@ def hash_wrapper_no_types():
     try:
         yield wrapper
     finally:
+        # TODO: Remove line below when "HashStop / HashTerminate - Freeze if the operation is not yet complete" bug fixed
+        time.sleep(sleep_time)
         wrapper.HashTerminate()
 
 
@@ -36,6 +40,8 @@ def hash_manager(hash_wrapper):
     try:
         yield manager
     finally:
+        # TODO: Remove line below when "HashStop / HashTerminate - Freeze if the operation is not yet complete" bug fixed
+        time.sleep(sleep_time)
         manager.terminate()
 
 
