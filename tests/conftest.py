@@ -8,25 +8,35 @@ sys.path.insert(0, "./testData")
 from hash_manager import HashWrapper, HashManager
 from utils import Utils
 
-sleep_time = 0
-
 
 @pytest.fixture
 def hash_wrapper():
     wrapper = HashWrapper()
     wrapper.HashInit()
-    yield wrapper
-    time.sleep(sleep_time)
-    wrapper.HashTerminate()
+    try:
+        yield wrapper
+    finally:
+        wrapper.HashTerminate()
+
+
+@pytest.fixture
+def hash_wrapper_no_types():
+    wrapper = HashWrapper(setup_types=False)
+    wrapper.HashInit()
+    try:
+        yield wrapper
+    finally:
+        wrapper.HashTerminate()
 
 
 @pytest.fixture
 def hash_manager(hash_wrapper):
     manager = HashManager(hash_wrapper)
     manager.initialize()
-    yield manager
-    time.sleep(sleep_time)
-    manager.terminate()
+    try:
+        yield manager
+    finally:
+        manager.terminate()
 
 
 @pytest.fixture
