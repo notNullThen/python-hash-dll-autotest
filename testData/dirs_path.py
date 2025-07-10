@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 @dataclass
 class DirsPath:
-    emptyDir = "./testData/emptyFolder"
-    oneFileDir = "./testData/oneFileFolder"
-    multipleFilesDir = "./testData/multipleFilesFolder"
+    emptyDir = "./testData/emptyDir"
+    oneFileDir = "./testData/oneFileDir"
+    multipleFilesDir = "./testData/multipleFilesDir"
 
 
 DIRS_PATH = DirsPath()

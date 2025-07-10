@@ -3,7 +3,7 @@ from dirs_path import DIRS_PATH
 
 
 @dataclass
-class FilesHash:
+class FilesDetails:
     file1_name = "file1.txt"
     file1_path = f"{DIRS_PATH.oneFileDir}/file1.txt"
     file1_hash = "8570DE03CE24E522B194D9093923F39F"
@@ -17,4 +17,4 @@ class FilesHash:
     file3_hash = "F93808AA6E9C27A4FF6CAF62F8BD74D2"
 
 
-FILES_HASH = FilesHash()
+FILES_DETAILS = FilesDetails()

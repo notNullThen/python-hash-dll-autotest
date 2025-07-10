@@ -1,1 +1,6 @@
+# PyTest
 __pycache__
+.pytest_cache
+
+# VS Code
+# .vscode

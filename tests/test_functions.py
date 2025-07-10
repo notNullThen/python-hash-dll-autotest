@@ -58,7 +58,7 @@ def test_HashFree(hash_manager):
     while hash_manager.get_running_status(operation_id_value):
         time.sleep(0.1)
 
-    result = hash_manager.read_next_log_line()
+    result = hash_manager.read_next_log_line_and_free()
     assert result is not None, "Log line pointer should not be None"
 
     hash_manager.free(result)

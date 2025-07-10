@@ -16,7 +16,8 @@ class Utils:
         while self.manager.get_running_status(operation_id_value):
             time.sleep(0.1)
 
-        result = self.manager.read_next_log_line()
+        result = self.manager.read_next_log_line_and_free()
+
         return result.decode("utf-8")
 
     @staticmethod
