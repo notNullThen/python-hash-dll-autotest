@@ -90,17 +90,20 @@ def test_two_parallel_hashes(hash_manager):
     assert hash_manager.get_running_status(operation_id1)
     assert hash_manager.get_running_status(operation_id2)
 
-    while hash_manager.get_running_status(operation_id1) or hash_manager.get_running_status(operation_id2):
+    while hash_manager.get_running_status(operation_id1) and hash_manager.get_running_status(operation_id2):
         time.sleep(0.1)
 
-    actual_result = hash_manager.read_next_log_line_and_free().decode("utf-8")
+    actual_result_1 = hash_manager.read_next_log_line_and_free()
+    actual_result_2 = hash_manager.read_next_log_line_and_free()
     expected_result_1 = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
     expected_result_2 = Utils.build_result(2, FILES_DETAILS.file2_path, FILES_DETAILS.file2_hash)
-    expected_result = f"{expected_result_1}\n{expected_result_2}"
 
     assert (
-        expected_result.lower() in actual_result.lower()
-    ), f"First result is incorrect\nExpected result:\n{expected_result}\nActual result:\n{actual_result}\n"
+        expected_result_1.lower() in actual_result_1.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_1}\n{actual_result_1}"
+    assert (
+        expected_result_1.lower() in actual_result_1.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_2}\n{actual_result_2}"
 
 
 def test_multiple_files_dir_hash(hash_manager):
