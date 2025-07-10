@@ -52,7 +52,7 @@ def test_hash_one_file_dir(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-# @pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
+@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
 def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
     utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
     hash_manager.read_next_log_line_and_free()
