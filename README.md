@@ -59,13 +59,20 @@ pytest -v tests/test_functions.py -s
 
 # Found bugs
 
-- ✅ HashStop() and HashTerminate() freeze if operation is not finished
+### Hash functions return code
+
+- ✅ HashStop does not return valid error code when Hash is not initialized or terminated
+- ✅ HashFree does not return valid error code
+- ✅ HashInit does not return error code when the library is already initialized
+- ✅ HashReadNextLogLine returns "1: Unknown error" error instead of "4: Reading an empty log"
+
+### Functional bugs
+
 - ✅ MD5 Hash is calculated incorrectly
 - ⚙️ Returns only last file hash from multiple files folder
 - ⚙️ Mixes resutls into one line if hash 2 folders paralelly
-- ⚙️ HashFree does not return valid error code
-- ❓️ Memory is being managed incorrectly
-  - To reproduce - unskip the `test_hash_one_file_dir()` test and run in bash `pytest -v tests/`
-  - Then you can see in report that the actual result contains `multipleFilesFolder` and `file3.txt` though in Python script we use `file1.txt` from `oneFilesFolder`
-  - The test will pass if you run only the `test_hash_one_file_dir` test with bash command `pytest -v tests/ -k test_hash_one_file_dir`
-  - That means that memory is handled wrongly.
+- ✅ HashStop() and HashTerminate() freeze if operation is not finished
+- ✅ Memory is being managed incorrectly
+  - To reproduce - unskip `test_hash_two_different_dirs` test and run it by bash command `pytest -v tests -k test_hash_two_different_dirs`
+  - In error report you will see that expected directory was `oneFileDir`, but actual directory is `multipleFilesDir`
+  - If you comment the first directory hash line - `utils.get_directory_hash(DIRS_PATH.multipleFilesDir)`, you will see that error report now has the oneFileDir in both actual and expected results, which is correct behavior. It means that first dir hash was used in second dir hash line

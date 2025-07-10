@@ -52,7 +52,7 @@ def test_hash_one_file_dir(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: Memory is being managed incorrectly (leaked)")
+@pytest.mark.skip(reason="BUG: Memory is being managed incorrectly")
 def test_hash_two_different_dirs(utils):
     utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
     actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
