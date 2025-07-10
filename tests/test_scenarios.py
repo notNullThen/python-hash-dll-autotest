@@ -2,7 +2,7 @@ import time
 import pytest
 from ctypes import *
 from dirs_path import DIRS_PATH
-from files_hash import FILES_HASH
+from files_hash import FILES_DETAILS
 from utils import Utils
 
 
@@ -14,12 +14,10 @@ def test_init_then_terminate(hash_wrapper):
 
 
 @pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
-def test_hash_dir_then_stop(hash_wrapper):
-    operation_id = c_size_t()
-    hash_wrapper.HashDirectory(DIRS_PATH.multipleFilesDir.encode("utf-8"), byref(operation_id))
+def test_hash_dir_then_stop(hash_manager):
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
 
-    stop_result = hash_wrapper.HashStop(operation_id)
-    assert stop_result == 0, f"HashStop failed with error code: {hash_wrapper.get_error_from_code(stop_result)}"
+    hash_manager.stop(operation_id_value)
 
 
 def test_hash_dir_then_terminate(hash_wrapper):
@@ -45,16 +43,27 @@ def test_hash_dir_with_invalid_path(hash_wrapper):
     assert operation_id.value == 0
 
 
-@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly | BUG: Memory is being managed incorrectly")
+@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
 def test_hash_one_file_dir(utils):
     actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
-    expected_result = Utils.build_result(1, FILES_HASH.file1_path, FILES_HASH.file1_hash)
+    expected_result = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
     assert (
         expected_result.lower() in actual_result.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: Memory is being managed incorrectly")
+@pytest.mark.skip(reason="BUG: Memory is being managed incorrectly (leaked)")
+def test_hash_two_different_dirs(utils):
+    utils.get_directory_hash(DIRS_PATH.multipleFilesDir)
+    actual_result = utils.get_directory_hash(DIRS_PATH.oneFileDir)
+    expected_result = Utils.build_result(2, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
+
+    assert (
+        actual_result.lower() == expected_result.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
+
+
+@pytest.mark.skip(reason="Can run it only one because of memory bugs")
 def test_hash_empty_dir(hash_manager, hash_wrapper):
     operation_id = c_size_t()
     hash_wrapper.HashDirectory(DIRS_PATH.emptyDir.encode("utf-8"), byref(operation_id))
@@ -83,9 +92,9 @@ def test_two_parallel_hashes(hash_manager):
     while hash_manager.get_running_status(operation_id1) or hash_manager.get_running_status(operation_id2):
         time.sleep(0.1)
 
-    actual_result = hash_manager.read_next_log_line().decode("utf-8")
-    expected_result_1 = Utils.build_result(1, FILES_HASH.file1_path, FILES_HASH.file1_hash)
-    expected_result_2 = Utils.build_result(2, FILES_HASH.file2_path, FILES_HASH.file2_hash)
+    actual_result = hash_manager.read_next_log_line_and_free().decode("utf-8")
+    expected_result_1 = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
+    expected_result_2 = Utils.build_result(2, FILES_DETAILS.file2_path, FILES_DETAILS.file2_hash)
     expected_result = f"{expected_result_1}\n{expected_result_2}"
 
     assert (
@@ -100,5 +109,5 @@ def test_multiple_files_dir_hash(hash_manager):
     while hash_manager.get_running_status(operation_id):
         time.sleep(0.1)
 
-    result = hash_manager.read_next_log_line()
+    result = hash_manager.read_next_log_line_and_free()
     print(f"Log line: {result.decode('utf-8')}")
