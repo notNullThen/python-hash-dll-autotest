@@ -52,9 +52,13 @@ def test_hash_one_file_dir(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: HashStop() and HashTerminate() freeze if operation is not finished")
+@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
 def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
-    hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+
+    while hash_manager.get_running_status(operation_id_value):
+        time.sleep(0.1)
+
     hash_manager.read_next_log_line_and_free()
     hash_manager.read_next_log_line_and_free()
     actual_result = utils.get_one_file_directory_hash(DIRS_PATH.oneFileDir)
@@ -80,16 +84,18 @@ def test_hash_empty_dir(hash_manager, hash_wrapper):
     assert not hash_manager.get_running_status(operation_id.value), "Hash operation should not be running"
 
 
-@pytest.mark.skip(reason="BUG: Mixes results into one line if hashing 2 folders in parallel")
+@pytest.mark.skip(
+    reason="BUG: Mixes results into one line if hashing 2 folders in parallel | BUG: Memory can be mixed up when running several separate processes"
+)
 def test_two_parallel_hashes(hash_manager):
     operation_id1 = hash_manager.hash_directory(DIRS_PATH.oneFileDir)
-    operation_id2 = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
-
-    assert operation_id1 > 0
-    assert operation_id2 == operation_id1 + 1
+    operation_id2 = hash_manager.hash_directory(DIRS_PATH.oneFileDir)
 
     assert hash_manager.get_running_status(operation_id1)
     assert hash_manager.get_running_status(operation_id2)
+
+    assert operation_id1 > 0
+    assert operation_id2 == operation_id1 + 1
 
     while hash_manager.get_running_status(operation_id1) and hash_manager.get_running_status(operation_id2):
         time.sleep(0.1)
@@ -97,16 +103,17 @@ def test_two_parallel_hashes(hash_manager):
     actual_result_1 = hash_manager.read_next_log_line_and_free().decode("utf-8")
     actual_result_2 = hash_manager.read_next_log_line_and_free().decode("utf-8")
     expected_result_1 = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
-    expected_result_2 = Utils.build_result(2, FILES_DETAILS.file2_path, FILES_DETAILS.file2_hash)
+    expected_result_2 = Utils.build_result(2, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
 
     assert (
         expected_result_1.lower() in actual_result_1.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_1}\n{actual_result_1}"
     assert (
-        expected_result_1.lower() in actual_result_1.lower()
+        expected_result_2.lower() in actual_result_2.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_2}\n{actual_result_2}"
 
 
+@pytest.mark.skip(reason="BUG: MD5 Hash is calculated incorrectly")
 def test_multiple_files_dir_hash(hash_manager):
     operation_id = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
     assert operation_id > 0
@@ -114,7 +121,15 @@ def test_multiple_files_dir_hash(hash_manager):
     while hash_manager.get_running_status(operation_id):
         time.sleep(0.1)
 
-    result_line_1 = hash_manager.read_next_log_line_and_free()
-    print(f"Log line: {result_line_1.decode('utf-8')}")
-    result_line_2 = hash_manager.read_next_log_line_and_free()
-    print(f"Log line: {result_line_2.decode('utf-8')}")
+    actual_result_1 = hash_manager.read_next_log_line_and_free().decode("utf-8")
+    actual_result_2 = hash_manager.read_next_log_line_and_free().decode("utf-8")
+
+    expected_result_1 = Utils.build_result(1, FILES_DETAILS.file2_path, FILES_DETAILS.file2_hash)
+    expected_result_2 = Utils.build_result(2, FILES_DETAILS.file3_path, FILES_DETAILS.file3_hash)
+
+    assert (
+        expected_result_1.lower() in actual_result_1.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_1}\n{actual_result_1}"
+    assert (
+        expected_result_2.lower() in actual_result_2.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_2}\n{actual_result_2}"

@@ -86,8 +86,9 @@ pytest -v -s tests/test_functions.py
 
 ### Functional Issues
 
-| Component                | Issue                                                    | Covered |
-| :----------------------- | :------------------------------------------------------- | :------ |
-| HashDirectory            | Incorrect MD5 hash calculation                           | ✅      |
-| Parallel Hashing         | Log lines are mixed when hashing two folders in parallel | ✅      |
-| HashStop / HashTerminate | Freeze if the operation is not yet complete              | ✅      |
+| Component                | Issue                                                          | Covered |
+| :----------------------- | :------------------------------------------------------------- | :------ |
+| HashDirectory            | Incorrect MD5 hash calculation                                 | ✅      |
+| Parallel Hashing         | Log lines are mixed when hashing two folders in parallel       | ✅      |
+| HashStop / HashTerminate | Freeze if the operation is not yet complete                    | ✅      |
+| Memory management        | Memory can be mixed up when running several separate processes | ✅      |
