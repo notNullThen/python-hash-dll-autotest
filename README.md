@@ -10,6 +10,7 @@ Automated test suite for validating the behavior and stability of a C/C++ dynami
 
 ```bash
 git clone https://github.com/notNullThen/python-hash-dll-autotest.git
+cd python-hash-dll-autotest
 ```
 
 ### 2. Create and Activate a Virtual Environment
