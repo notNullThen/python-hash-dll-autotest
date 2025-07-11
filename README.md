@@ -9,8 +9,7 @@ Automated test suite for validating the behavior and stability of a C/C++ dynami
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/hash-lib-tests.git
-cd hash-lib-tests
+git clone https://github.com/notNullThen/python-hash-dll-autotest.git
 ```
 
 ### 2. Create and Activate a Virtual Environment
