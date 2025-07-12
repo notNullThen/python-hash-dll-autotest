@@ -143,3 +143,7 @@ def test_non_ascii_file_dir_hash(utils):
     assert (
         actual_result.lower() == expected_result.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
+
+
+# TODO: 100MB+ files directory hash test
+# Note: Could not upload the 100MB+ file in GitHub repository
