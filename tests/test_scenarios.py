@@ -15,14 +15,14 @@ def test_init_then_terminate(hash_wrapper):
 
 @pytest.mark.skip(reason="BUG: HashStop / HashTerminate - Freeze if the operation is not yet complete")
 def test_hash_dir_then_stop(hash_manager):
-    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
 
     hash_manager.stop(operation_id_value)
 
 
 def test_hash_dir_then_terminate(hash_wrapper):
     operation_id = c_size_t()
-    hash_wrapper.HashDirectory(DIRS_PATH.multipleFilesDir.encode("utf-8"), byref(operation_id))
+    hash_wrapper.HashDirectory(DIRS_PATH.multiple_files_dir.encode("utf-8"), byref(operation_id))
 
     time.sleep(0.5)
     terminate_result = hash_wrapper.HashTerminate()
@@ -45,7 +45,7 @@ def test_hash_dir_with_invalid_path(hash_wrapper):
 
 @pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
 def test_hash_one_file_dir(utils):
-    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.oneFileDir)
+    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.one_file_dir)
     expected_result = Utils.build_result(1, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
     assert (
         expected_result.lower() in actual_result.lower()
@@ -54,14 +54,14 @@ def test_hash_one_file_dir(utils):
 
 @pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
 def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
-    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
 
     while hash_manager.get_running_status(operation_id_value):
         time.sleep(0.1)
 
     hash_manager.read_next_log_line_and_free()
     hash_manager.read_next_log_line_and_free()
-    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.oneFileDir)
+    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.one_file_dir)
     expected_result = Utils.build_result(2, FILES_DETAILS.file1_path, FILES_DETAILS.file1_hash)
 
     assert (
@@ -72,7 +72,7 @@ def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
 @pytest.mark.skip(reason="Can run only separately because of memory bugs")
 def test_hash_empty_dir(hash_manager, hash_wrapper):
     operation_id = c_size_t()
-    hash_wrapper.HashDirectory(DIRS_PATH.emptyDir.encode("utf-8"), byref(operation_id))
+    hash_wrapper.HashDirectory(DIRS_PATH.empty_dir.encode("utf-8"), byref(operation_id))
 
     while hash_manager.get_running_status(operation_id.value):
         time.sleep(0.1)
@@ -88,8 +88,8 @@ def test_hash_empty_dir(hash_manager, hash_wrapper):
     reason="BUG: Log lines are mixed when hashing two folders in parallel | BUG: Memory can be mixed up when running several separate processes"
 )
 def test_two_parallel_hashes(hash_manager):
-    operation_id1 = hash_manager.hash_directory(DIRS_PATH.oneFileDir)
-    operation_id2 = hash_manager.hash_directory(DIRS_PATH.oneFileDir)
+    operation_id1 = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
+    operation_id2 = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
 
     assert hash_manager.get_running_status(operation_id1)
     assert hash_manager.get_running_status(operation_id2)
@@ -115,7 +115,7 @@ def test_two_parallel_hashes(hash_manager):
 
 @pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
 def test_multiple_files_dir_hash(hash_manager):
-    operation_id = hash_manager.hash_directory(DIRS_PATH.multipleFilesDir)
+    operation_id = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
     assert operation_id > 0
 
     while hash_manager.get_running_status(operation_id):

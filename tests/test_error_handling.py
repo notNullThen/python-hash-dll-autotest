@@ -15,7 +15,7 @@ def assert_error(expected_error: int, actual_error: int, function_name: str, has
     reason='BUG: HashReadNextLogLine returns "1: Unknown error" error instead of "4: Reading an empty log"'
 )
 def test_reading_an_empty_log(hash_wrapper, hash_manager):
-    hash_manager.hash_directory(DIRS_PATH.emptyDir)
+    hash_manager.hash_directory(DIRS_PATH.empty_dir)
 
     line_ptr = c_char_p()
     HashReadNextLogLine_result = hash_wrapper.HashReadNextLogLine(line_ptr)
