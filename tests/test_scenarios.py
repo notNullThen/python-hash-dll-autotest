@@ -159,7 +159,7 @@ def test_long_non_ascii_path_dir_hash(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
-@pytest.mark.skip(reason="BUG: Terminate() doesn't clean memory")
+@pytest.mark.skip(reason="BUG: Log lines can be read even after running HashTerminate() and HashInit() again.")
 def test_log_lines_after_termination(hash_manager, utils):
     hash_manager.initialize()
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
@@ -172,6 +172,9 @@ def test_log_lines_after_termination(hash_manager, utils):
 
     line_ptr = c_char_p()
     result = hash_manager.wrapper.HashReadNextLogLine(line_ptr)
+
+    assert FILES_DETAILS.file1_path not in line_ptr.value.decode("utf-8")
+    assert FILES_DETAILS.file1_hash not in line_ptr.value.decode("utf-8")
 
     assert (
         result != 0
