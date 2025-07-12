@@ -56,23 +56,6 @@ pytest -v -s tests/test_functions.py
 
 ---
 
-## 🧩 Test Coverage Overview
-
-### 🔻 Low-Level Tests (Direct Library Calls)
-
-- Error code validation for each function
-- Handling of null/invalid arguments
-- Proper library init/terminate behavior
-
-### 🔺 High-Level Tests (Via Python Wrapper)
-
-- Hashing a directory with a single file
-- Hashing a directory with multiple files
-- Reading logs from completed operations
-- Parallel hashing scenarios
-
----
-
 ## 🐞 Known and Confirmed Bugs
 
 ### Return Code Issues
@@ -92,3 +75,43 @@ pytest -v -s tests/test_functions.py
 | Parallel Hashing         | Log lines are mixed when hashing two folders in parallel       | ✅      |
 | HashStop / HashTerminate | Freeze if the operation is not yet complete                    | ✅      |
 | Memory management        | Memory can be mixed up when running several separate processes | ✅      |
+
+## 🧩 Test Coverage Overview
+
+### 🔻 Low-Level Error Handling Tests (`test_error_handling.py`)
+
+| Test Case                                    | Purpose                                                                     | Notes                                 |
+| -------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------- |
+| `test_invalid_argument_passed_to_a_function` | Verifies proper error codes when passing `None` or invalid pointers         | Covers error codes 5 and 6            |
+| `test_library_is_not_initialized`            | Ensures all functions return error code 7 if the library is not initialized | Terminates before executing functions |
+| `test_library_is_already_initialized`        | Ensures re-initialization of the library returns error code 8               | Skipped due to bug                    |
+| `test_reading_an_empty_log`                  | Ensures reading an empty log returns error code 4                           | Skipped due to bug                    |
+
+---
+
+### 🔺 Functional Integration Tests (`test_functions.py`)
+
+| Test Case                  | Purpose                                                      | Notes                                |
+| -------------------------- | ------------------------------------------------------------ | ------------------------------------ |
+| `test_HashDirectory`       | Tests directory hashing operation and validates operation ID | Skipped due to freezing bug          |
+| `test_HashReadNextLogLine` | Validates successful log reading after hashing               | Uses helper utils                    |
+| `test_HashStatus`          | Verifies that the operation status reflects real-time state  | Monitors during and after operation  |
+| `test_HashStop`            | Validates stopping a running hash operation                  | Skipped due to freeze bug            |
+| `test_HashFree`            | Tests memory release behavior after reading a log            | Skipped due to memory cleanup issues |
+
+---
+
+### 🧩 Scenario-Based Tests (`test_scenarios.py`)
+
+| Test Case                                    | Purpose                                                  | Notes                                        |
+| -------------------------------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| `test_init_then_terminate`                   | Validates basic init and terminate lifecycle             |                                              |
+| `test_hash_dir_then_stop`                    | Runs hashing and immediately stops operation             | Skipped due to freeze bug                    |
+| `test_hash_dir_then_terminate`               | Runs hashing and calls terminate during operation        |                                              |
+| `test_hash_dir_with_invalid_path`            | Validates error handling for non-existent path           | Skipped - filesystem error to be defined     |
+| `test_hash_one_file_dir`                     | Tests hashing a directory with one file                  | Skipped - incorrect MD5 bug                  |
+| `test_hash_multiple_files_and_one_file_dirs` | Chains multi-file and one-file hashing                   | Skipped - incorrect MD5 + memory issues      |
+| `test_hash_empty_dir`                        | Validates behavior for empty directories                 | Skipped - should only run separately         |
+| `test_two_parallel_hashes`                   | Validates parallel hashing behavior and result isolation | Skipped - mixed log/memory corruption issues |
+| `test_multiple_files_dir_hash`               | Hashes a multi-file directory and verifies order/results | Skipped - incorrect MD5 bug                  |
+| `test_non_ascii_file_dir_hash`               | Hashes a file with non-ASCII characters name and content | Skipped - incorrect MD5 bug                  |

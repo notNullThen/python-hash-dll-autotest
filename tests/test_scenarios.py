@@ -133,3 +133,13 @@ def test_multiple_files_dir_hash(hash_manager):
     assert (
         expected_result_2.lower() in actual_result_2.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result_2}\n{actual_result_2}"
+
+
+@pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
+def test_non_ascii_file_dir_hash(utils):
+    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.non_ascii_files_dir)
+    expected_result = Utils.build_result(1, FILES_DETAILS.non_ascii_file_path, FILES_DETAILS.non_ascii_file_hash)
+
+    assert (
+        actual_result.lower() == expected_result.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
