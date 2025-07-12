@@ -72,10 +72,10 @@ pytest -v -s tests/test_functions.py
 | Component                | Issue                                                                          | Covered |
 | :----------------------- | :----------------------------------------------------------------------------- | :------ |
 | HashDirectory            | Incorrect MD5 hash calculation                                                 | ✅      |
-| Parallel Hashing         | Log lines are mixed when hashing two folders in parallel                       | ✅      |
 | HashStop / HashTerminate | Freeze if the operation is not yet complete                                    | ✅      |
-| Memory mix up            | Memory can be mixed up when running several separate processes                 | ✅      |
 | HashTerminate            | Log lines can be read even after running HashTerminate() and HashInit() again. | ✅      |
+| Parallel Hashing         | Log lines are mixed when hashing two folders in parallel                       | ✅      |
+| Memory mix up            | Memory can be mixed up when running several separate processes                 | ✅      |
 | Long non-ASCII paths     | Cannot process long non-ASCII paths                                            | ✅      |
 
 ## 🧩 Test Coverage Overview
