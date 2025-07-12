@@ -3,9 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class DirsPath:
-    empty_dir = "./testData/emptyDir"
-    one_file_dir = "./testData/oneFileDir"
-    multiple_files_dir = "./testData/multipleFilesDir"
+    empty_dir = "./testData/empty_dir"
+    one_file_dir = "./testData/one_file_dir"
+    multiple_files_dir = "./testData/multiple_files_dir"
+    non_ascii_files_dir = "./testData/non_ascii_file_name"
 
 
 DIRS_PATH = DirsPath()

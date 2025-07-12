@@ -2,7 +2,7 @@ import time
 import pytest
 from ctypes import *
 from dirs_path import DIRS_PATH
-from files_hash import FILES_DETAILS
+from files_details import FILES_DETAILS
 from utils import Utils
 
 
