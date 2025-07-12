@@ -21,7 +21,7 @@ def test_HashReadNextLogLine(utils):
     assert result is not None, "Log line should not be None"
 
 
-def test_HashStatus(hash_manager):
+def test_HashStatus(hash_manager, utils):
 
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
     assert operation_id_value > 0, "Operation ID should be greater than 0"
@@ -29,8 +29,7 @@ def test_HashStatus(hash_manager):
     status = hash_manager.get_running_status(operation_id_value)
     assert status is True, "Status should be True while operation is running"
 
-    while hash_manager.get_running_status(operation_id_value):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id_value)
 
     assert (
         hash_manager.get_running_status(operation_id_value) is False
@@ -52,11 +51,10 @@ def test_HashStop(hash_manager):
 
 
 @pytest.mark.skip(reason="BUG: HashFree() does not clean memory up correctly")
-def test_HashFree(hash_manager):
+def test_HashFree(hash_manager, utils):
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
 
-    while hash_manager.get_running_status(operation_id_value):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id_value)
 
     result = hash_manager.read_next_log_line_and_free()
     assert result is not None, "Log line pointer should not be None"

@@ -60,5 +60,5 @@ def hash_manager(hash_wrapper):
 
 
 @pytest.fixture
-def utils(hash_wrapper):
-    return Utils(hash_wrapper)
+def utils(hash_manager):
+    return Utils(hash_manager)

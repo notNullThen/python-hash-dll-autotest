@@ -20,17 +20,16 @@ def test_hash_dir_then_stop(hash_manager):
     hash_manager.stop(operation_id_value)
 
 
-def test_hash_dir_then_terminate(hash_wrapper, hash_manager):
+def test_hash_dir_then_terminate(hash_manager, utils):
     operation_id = c_size_t()
-    hash_wrapper.HashDirectory(DIRS_PATH.multiple_files_dir.encode("utf-8"), byref(operation_id))
+    hash_manager.wrapper.HashDirectory(DIRS_PATH.multiple_files_dir.encode("utf-8"), byref(operation_id))
 
-    while hash_manager.get_running_status(operation_id.value):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id.value)
 
-    terminate_result = hash_wrapper.HashTerminate()
+    terminate_result = hash_manager.wrapper.HashTerminate()
     assert (
         terminate_result == 0
-    ), f"HashTerminate failed with error code: {hash_wrapper.get_error_from_code(terminate_result)}"
+    ), f"HashTerminate failed with error code: {hash_manager.wrapper.get_error_from_code(terminate_result)}"
 
     # TODO: Remove Clean-up logic below after "Terminate() doesn't clean memory" bug fixed
     # Clean-up
@@ -64,8 +63,7 @@ def test_hash_one_file_dir(utils):
 def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
 
-    while hash_manager.get_running_status(operation_id_value):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id_value)
 
     hash_manager.read_next_log_line_and_free()
     hash_manager.read_next_log_line_and_free()
@@ -78,15 +76,14 @@ def test_hash_multiple_files_and_one_file_dirs(utils, hash_manager):
 
 
 @pytest.mark.skip(reason="Can run only separately because of memory bugs")
-def test_hash_empty_dir(hash_manager, hash_wrapper):
+def test_hash_empty_dir(hash_manager, utils):
     operation_id = c_size_t()
-    hash_wrapper.HashDirectory(DIRS_PATH.empty_dir.encode("utf-8"), byref(operation_id))
+    hash_manager.wrapper.HashDirectory(DIRS_PATH.empty_dir.encode("utf-8"), byref(operation_id))
 
-    while hash_manager.get_running_status(operation_id.value):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id.value)
 
     line_ptr = c_char_p()
-    result = hash_wrapper.HashReadNextLogLine(line_ptr)
+    result = hash_manager.wrapper.HashReadNextLogLine(line_ptr)
 
     assert result != 0, f"HashDirectory should fail with error code 1, got {result}"
     assert not hash_manager.get_running_status(operation_id.value), "Hash operation should not be running"
@@ -120,12 +117,11 @@ def test_two_parallel_hashes(hash_manager):
 
 
 @pytest.mark.skip(reason="BUG: Incorrect MD5 hash calculation")
-def test_multiple_files_dir_hash(hash_manager):
-    operation_id = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
-    assert operation_id > 0
+def test_multiple_files_dir_hash(hash_manager, utils):
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.multiple_files_dir)
+    assert operation_id_value > 0
 
-    while hash_manager.get_running_status(operation_id):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id_value)
 
     actual_result_1 = hash_manager.read_next_log_line_and_free().decode("utf-8")
     actual_result_2 = hash_manager.read_next_log_line_and_free().decode("utf-8")
@@ -164,12 +160,11 @@ def test_long_non_ascii_path_dir_hash(utils):
 
 
 @pytest.mark.skip(reason="BUG: Terminate() doesn't clean memory")
-def test_log_lines_after_termination(hash_manager):
+def test_log_lines_after_termination(hash_manager, utils):
     hash_manager.initialize()
     operation_id_value = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
 
-    while hash_manager.get_running_status(operation_id_value):
-        time.sleep(0.1)
+    utils.sleep_till_operation_done(operation_id_value)
 
     hash_manager.terminate()
 
