@@ -145,5 +145,17 @@ def test_non_ascii_file_dir_hash(utils):
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
 
 
+@pytest.mark.skip(reason="BUG: Cannot process long non-ASCII paths")
+def test_long_non_ascii_path_dir_hash(utils):
+    actual_result = utils.get_one_file_directory_hash(DIRS_PATH.long_non_ascii_path_dir)
+    expected_result = Utils.build_result(
+        1, FILES_DETAILS.long_non_ascii_path_file_path, FILES_DETAILS.long_non_ascii_path_file_hash
+    )
+
+    assert (
+        actual_result.lower() == expected_result.lower()
+    ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
+
+
 # TODO: 100MB+ files directory hash test
 # Note: Could not upload the 100MB+ file in GitHub repository

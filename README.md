@@ -75,6 +75,7 @@ pytest -v -s tests/test_functions.py
 | Parallel Hashing         | Log lines are mixed when hashing two folders in parallel       | ✅      |
 | HashStop / HashTerminate | Freeze if the operation is not yet complete                    | ✅      |
 | Memory management        | Memory can be mixed up when running several separate processes | ✅      |
+| Long non-ASCII paths     | Cannot process long non-ASCII paths                            | ✅      |
 
 ## 🧩 Test Coverage Overview
 

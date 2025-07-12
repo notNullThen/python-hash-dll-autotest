@@ -1,0 +1,8 @@
+Chinese	测试文件.txt	test file
+Russian	тестовый_файл.txt	test file
+Arabic	ملف_اختبار.txt	test file
+Czech	zkušební_soubor.txt	test file
+Hungarian	tesztfájl.txt	test file
+Japanese	テストファイル.txt	test file
+Ukrainian	тестовий_файл.txt	test file
+Emoji-based	📄_тест.txt

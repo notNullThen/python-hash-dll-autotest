@@ -20,5 +20,9 @@ class FilesDetails:
     non_ascii_file_path = f"{DIRS_PATH.non_ascii_files_dir}/{__non_ascii_file_name}"
     non_ascii_file_hash = "8683FD63023B55B239D3F13DE785328F"
 
+    __long_non_ascii_path_file_name = "ファイル.txt"
+    long_non_ascii_path_file_path = f"{DIRS_PATH.long_non_ascii_path_dir}/{__long_non_ascii_path_file_name}"
+    long_non_ascii_path_file_hash = "8683FD63023B55B239D3F13DE785328F"
+
 
 FILES_DETAILS = FilesDetails()
