@@ -20,15 +20,23 @@ def test_hash_dir_then_stop(hash_manager):
     hash_manager.stop(operation_id_value)
 
 
-def test_hash_dir_then_terminate(hash_wrapper):
+def test_hash_dir_then_terminate(hash_wrapper, hash_manager):
     operation_id = c_size_t()
     hash_wrapper.HashDirectory(DIRS_PATH.multiple_files_dir.encode("utf-8"), byref(operation_id))
 
-    time.sleep(0.5)
+    while hash_manager.get_running_status(operation_id.value):
+        time.sleep(0.1)
+
     terminate_result = hash_wrapper.HashTerminate()
     assert (
         terminate_result == 0
     ), f"HashTerminate failed with error code: {hash_wrapper.get_error_from_code(terminate_result)}"
+
+    # TODO: Remove Clean-up logic below after "Terminate() doesn't clean memory" bug fixed
+    # Clean-up
+    hash_manager.initialize()
+    hash_manager.read_next_log_line_and_free()
+    hash_manager.read_next_log_line_and_free()
 
 
 @pytest.mark.skip(reason="TODO: Define how to ignore the 'std::filesystem::__cxx11::filesystem_error' error")
@@ -84,9 +92,7 @@ def test_hash_empty_dir(hash_manager, hash_wrapper):
     assert not hash_manager.get_running_status(operation_id.value), "Hash operation should not be running"
 
 
-@pytest.mark.skip(
-    reason="BUG: Log lines are mixed when hashing two folders in parallel | BUG: Memory can be mixed up when running several separate processes"
-)
+@pytest.mark.skip(reason="BUG: Log lines are mixed when hashing two folders in parallel | BUG: Memory mix up")
 def test_two_parallel_hashes(hash_manager):
     operation_id1 = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
     operation_id2 = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
@@ -155,6 +161,26 @@ def test_long_non_ascii_path_dir_hash(utils):
     assert (
         actual_result.lower() == expected_result.lower()
     ), f"Result is incorrect\nExpected result above; Actual result below:\n{expected_result}\n{actual_result}"
+
+
+@pytest.mark.skip(reason="BUG: Terminate() doesn't clean memory")
+def test_log_lines_after_termination(hash_manager):
+    hash_manager.initialize()
+    operation_id_value = hash_manager.hash_directory(DIRS_PATH.one_file_dir)
+
+    while hash_manager.get_running_status(operation_id_value):
+        time.sleep(0.1)
+
+    hash_manager.terminate()
+
+    hash_manager.initialize()
+
+    line_ptr = c_char_p()
+    result = hash_manager.wrapper.HashReadNextLogLine(line_ptr)
+
+    assert (
+        result != 0
+    ), f"The HashReadNextLogLine() should not be successful after termination and initialization. The result was: {hash_manager.wrapper.get_error_from_code(result)}"
 
 
 # TODO: 100MB+ files directory hash test

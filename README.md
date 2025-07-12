@@ -69,13 +69,14 @@ pytest -v -s tests/test_functions.py
 
 ### Functional Issues
 
-| Component                | Issue                                                          | Covered |
-| :----------------------- | :------------------------------------------------------------- | :------ |
-| HashDirectory            | Incorrect MD5 hash calculation                                 | ✅      |
-| Parallel Hashing         | Log lines are mixed when hashing two folders in parallel       | ✅      |
-| HashStop / HashTerminate | Freeze if the operation is not yet complete                    | ✅      |
-| Memory management        | Memory can be mixed up when running several separate processes | ✅      |
-| Long non-ASCII paths     | Cannot process long non-ASCII paths                            | ✅      |
+| Component                        | Issue                                                                          | Covered |
+| :------------------------------- | :----------------------------------------------------------------------------- | :------ |
+| HashDirectory                    | Incorrect MD5 hash calculation                                                 | ✅      |
+| Parallel Hashing                 | Log lines are mixed when hashing two folders in parallel                       | ✅      |
+| HashStop / HashTerminate         | Freeze if the operation is not yet complete                                    | ✅      |
+| Memory mix up                    | Memory can be mixed up when running several separate processes                 | ✅      |
+| Terminate() doesn't clean memory | Log lines can be read even after running HashTerminate() and HashInit() again. | ✅      |
+| Long non-ASCII paths             | Cannot process long non-ASCII paths                                            | ✅      |
 
 ## 🧩 Test Coverage Overview
 

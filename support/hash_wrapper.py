@@ -47,7 +47,7 @@ class HashWrapper:
     def HashStatus(self, operation_id, running: c_bool):
         return self.lib.HashStatus(operation_id, running)
 
-    def HashReadNextLogLine(self, line_ptr):
+    def HashReadNextLogLine(self, line_ptr: c_char_p):
         return self.lib.HashReadNextLogLine(line_ptr)
 
     def HashFree(self, pointer: c_char_p):

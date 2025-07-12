@@ -11,6 +11,15 @@ from utils import Utils
 sleep_time = 0.5
 
 
+# TODO: Remove the read_remained_lines() function after "Terminate() doesn't clean memory" bug fixed
+def read_remained_lines(hash_manager: HashManager):
+    while True:
+        try:
+            hash_manager.read_next_log_line_and_free()
+        except:
+            break
+
+
 @pytest.fixture
 def hash_wrapper():
     wrapper = HashWrapper()
@@ -18,6 +27,7 @@ def hash_wrapper():
     try:
         yield wrapper
     finally:
+        read_remained_lines(HashManager(wrapper))
         wrapper.HashTerminate()
 
 
@@ -28,6 +38,8 @@ def hash_wrapper_no_types():
     try:
         yield wrapper
     finally:
+        # TODO: Remove the line below after "Terminate() doesn't clean memory" bug fixed
+        read_remained_lines(HashManager(wrapper))
         # TODO: Remove line below when "HashStop / HashTerminate - Freeze if the operation is not yet complete" bug fixed
         time.sleep(sleep_time)
         wrapper.HashTerminate()
@@ -40,6 +52,8 @@ def hash_manager(hash_wrapper):
     try:
         yield manager
     finally:
+        # TODO: Remove the line below after "Terminate() doesn't clean memory" bug fixed
+        read_remained_lines(manager)
         # TODO: Remove line below when "HashStop / HashTerminate - Freeze if the operation is not yet complete" bug fixed
         time.sleep(sleep_time)
         manager.terminate()
